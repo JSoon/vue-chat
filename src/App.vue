@@ -145,7 +145,7 @@ export default {
 <style lang="css">
 
 :root {
-    --main-border-radius: 10px;
+    /* --main-border-radius: 10px;
     --main-margin-left: 80px;
     --main-margin-right: 80px;
     --main-margin-top: 50px;
@@ -153,7 +153,17 @@ export default {
     --tippy-right: 0px;
     --home-menu-padding-top: 60px;
     --composite-message-page-width: 100%;
-    --composite-message-page-height: 100%;
+    --composite-message-page-height: 100%; */
+
+    --main-border-radius: 0px;
+    --main-margin-left: 0px;
+    --main-margin-right: 0px;
+    --main-margin-top: 0px;
+    --main-margin-bottom: 0px;
+    --tippy-right: 0px;
+    --home-menu-padding-top: 0;
+    --composite-message-page-width: 100vw;
+    --composite-message-page-height: 100vh;
 }
 
 .tippy-tooltip {
