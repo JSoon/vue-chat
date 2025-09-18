@@ -19,6 +19,8 @@
                             trigger="click"
                             placement="left-start"
                             :style="tippyStyleFix"
+                            :append-to="tippyAppendTo"
+                            interactive
                         >
                             <template #content>
                                 <UserCardView :user-info="user" v-on:close="closeUserCard(user)"/>
@@ -113,6 +115,9 @@ export default {
         }
     },
     methods: {
+        tippyAppendTo() {
+            return document.body;
+        },
         clickUserItem(user) {
             this.clickUserItemFunc && this.clickUserItemFunc(user);
         },

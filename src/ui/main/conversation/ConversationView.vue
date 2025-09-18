@@ -288,6 +288,13 @@ export default {
             unreadMessageCount: 0,
             isWindowAlwaysTop: currentWindow && currentWindow.isAlwaysOnTop(),
             enableLoadRemoteHistoryMessage: !store.state.misc.isElectron, // web 端，本地没有消息存储，所以默认开启加载远程消息
+
+            hideConversationInfo: [
+                this.hideConversationInfoFunc,
+                {
+                    ignore: ['.tippy-box']
+                }
+            ]
         };
     },
 
@@ -435,7 +442,7 @@ export default {
             }
         },
 
-        hideConversationInfo() {
+        hideConversationInfoFunc() {
             // TODO
             // 是否在创建群聊，或者是在查看会话参与者信息
             this.showConversationInfo && (this.showConversationInfo = false);
@@ -772,7 +779,7 @@ export default {
                 }
             })
         },
-                
+
         forward(message) {
             return this.$forwardMessage({
                 forwardType: ForwardType.NORMAL,
@@ -846,7 +853,7 @@ export default {
                 this.enableLoadRemoteHistoryMessage = true;
             }, this.enableLoadRemoteHistoryMessage);
         },
-     
+
         playVoice(message) {
             if (amr) {
                 amr.stop();
