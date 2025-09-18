@@ -21,12 +21,10 @@
                                @click.prevent="setWindowAlwaysTop"
                             />
                         </a>
-                        <a href="#" @click.prevent>
+                        <a href="#" v-bind:class="{active : showConversationInfo}" @click.prevent="toggleConversationInfo">
                             <i class="icon-ion-ios-settings-strong"
                                style="display: inline-block"
                                ref="setting"
-                               v-bind:class="{active : showConversationInfo}"
-                               @click.prevent="toggleConversationInfo"
                             />
                         </a>
                     </div>
@@ -1142,6 +1140,14 @@ export default {
     border-bottom: 1px solid #e6e6e6;
     border-top-right-radius: var(--main-border-radius);
     position: relative;
+
+    a:hover {
+        color: #1f64e4;
+    }
+
+    a.active {
+        color: #3f64e4;
+    }
 }
 
 
@@ -1316,13 +1322,5 @@ export default {
 
 .conversation-info-container.active {
     display: flex;
-}
-
-i:hover {
-    color: #1f64e4;
-}
-
-i.active {
-    color: #3f64e4;
 }
 </style>
