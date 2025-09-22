@@ -125,7 +125,7 @@ export default {
             qrCodeTimer: null,
             appToken: '',
             lastAppToken: '',
-            loginType: 0, // 0 扫码登录，1 密码登录，2 验证码登录
+            loginType: 1, // 0 扫码登录，1 密码登录，2 验证码登录
             enableAutoLogin: Config.ENABLE_AUTO_LOGIN,
             mobile: '',
             password: '',
