@@ -16,18 +16,13 @@ export class AppServerApi {
 
     loinWithPassword(mobile, password) {
         return new Promise((resolve, reject) => {
-            resolve({
-                userId: 'FireRobboot',
-                token: '123456',
-                portrait: 'https://www.gravatar.com/avatar/a89440bd8287fee39d2b68cf94c59eae?s=46&d=identicon'
-            })
-            // let responsePromise = this._post('/login_pwd', {
-            //     mobile,
-            //     password,
-            //     platform: Config.getWFCPlatform(),
-            //     clientId: wfc.getClientId()
-            // }, true)
-            // this._interceptLoginResponse(responsePromise, resolve, reject)
+            let responsePromise = this._post('/login_pwd', {
+                mobile,
+                password,
+                platform: Config.getWFCPlatform(),
+                clientId: wfc.getClientId()
+            }, true)
+            this._interceptLoginResponse(responsePromise, resolve, reject)
         })
     }
 

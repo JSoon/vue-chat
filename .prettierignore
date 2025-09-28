@@ -1,0 +1,12 @@
+# .eslintignore 和 .prettierignore 保持同步
+
+dist
+public
+index.html
+
+# 原项目文件
+vue.config.js
+src/config.js
+src/main.js
+src/api/appServerApi.js
+src/ui/main/LoginPage.vue

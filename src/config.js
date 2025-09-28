@@ -43,7 +43,7 @@ export default class Config {
 
     // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
     // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
-    static ORGANIZATION_SERVER = 'https://org.wildfirechat.cn';
+    // static ORGANIZATION_SERVER = 'https://org.wildfirechat.cn';
     // 野火二维码 scheme，不要修改，如果需要修改的话，所有端都需要一起修改
     static QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
 
@@ -89,7 +89,7 @@ export default class Config {
     // 2 clientId存储于localStorage，和域名绑定，每个域名，对应一个clientId，重启浏览器等，不会变化，会导致同一个浏览器，不能同时登录多个不同的账号
     // token是和clientId绑定的，当选策略1和2的时候，应用层可选择将上次成功连接的userId和token持久化，当用户进行刷新网页等操作时，可以直接用持久化的userId和token进行连接；而不用重新进行扫码登录
     // 选2时，支持web端快速登录
-    static CLIENT_ID_STRATEGY = 1;
+    static CLIENT_ID_STRATEGY = 2;
 
     static SDK_PLATFORM_WINDOWS = 3;
     static SDK_PLATFORM_OSX = 4;

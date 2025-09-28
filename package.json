@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve --skip-plugins @vue/cli-plugin-eslint --open",
     "serve-https": "vue-cli-service serve --https true --skip-plugins @vue/cli-plugin-eslint",
     "build": "vue-cli-service build --skip-plugins @vue/cli-plugin-eslint",
+    "build:staging": "vue-cli-service build --mode staging --skip-plugins @vue/cli-plugin-eslint",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -25,9 +26,11 @@
     "buffer": "^6.0.3",
     "core-js": "^3.36.0",
     "detectrtc": "^1.4.1",
+    "element-plus": "^2.11.4",
     "events": "^3.2.0",
     "jr-qrcode": "^1.1.4",
     "js-base64": "^3.4.5",
+    "js-cookie": "^3.0.5",
     "long": "^4.0.0",
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",

@@ -113,6 +113,8 @@ import organizationServerApi from "../../api/organizationServerApi";
 import WfcScheme from "../../wfcScheme";
 import axios from "axios";
 import avenginekit from "../../wfc/av/internal/engine.min";
+import { login } from '@/api/login.js'
+import { getQueryParam } from "../../utils";
 
 export default {
     name: 'LoginPage',
@@ -156,6 +158,11 @@ export default {
             isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
             this.refreshQrCode();
         }
+
+        // 临时登录，用于测试
+        if (!userId || !token) {
+          this.loginTemp();
+        }
     },
 
     beforeUnmount() {
@@ -198,6 +205,18 @@ export default {
                         type: 'error'
                     });
                 })
+        },
+
+        async loginTemp() {
+          const userId = getQueryParam('userId')
+          if (!userId) {
+            alert('url中缺少userId参数')
+            return
+          }
+          const { data } = await login(userId)
+          this.firstTimeConnect = wfc.connect(data?.userId, data?.token)
+          setItem('userId', data?.userId)
+          setItem('token', data?.token)
         },
 
         async loginWithPassword() {
@@ -285,6 +304,7 @@ export default {
         },
 
         async refreshQrCode() {
+            return;
             await this.createPCLoginSession(null);
             if (!this.qrCodeTimer) {
                 this.qrCodeTimer = setInterval(() => {

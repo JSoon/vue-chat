@@ -31,6 +31,8 @@ import mitt from 'mitt'
 import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
 import CustomMessageConfig from "./wfc_custom_message/customMessageConfig";
 
+import 'element-plus/dist/index.css';
+
 // Vue.config.productionTip = false
 
 const app = createApp(App)
