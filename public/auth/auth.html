@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>系统授权中，请稍候……</title>
+  <link rel="stylesheet" href="./element-plus@2.9.10.css" />
+  <script src="./vue.global.prod@3.5.17.js"></script>
+  <script src="./element-plus@2.9.10.min.js"></script>
+  <script src="./js.cookie.min.js"></script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #app {
+      height: 100vh;
+    }
+
+    #app .page {
+      position: fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="page" v-loading="loading" element-loading-text="系统授权中，请稍候……">
+      <el-result v-if="error" icon="error" title="授权失败" sub-title="系统授权失败，请联系管理员。">
+        <template #extra>
+          <el-alert type="error" :closable="false">
+            {{ error }}
+          </el-alert>
+        </template>
+      </el-result>
+    </div>
+  </div>
+
+  <script>
+    function getQueryParam(name) {
+      // 从hash中提取query部分（从?开始的部分）
+      const queryString = window.location.hash.split('?')[1];
+      if (queryString) {
+        // 将query字符串转换为URLSearchParams对象
+        const searchParams = new URLSearchParams(queryString);
+        // 获取指定参数的值
+        return searchParams.get(name);
+      }
+      // 从正常参数中提取query
+      return new URLSearchParams(window.location.search).get(name);
+    }
+  </script>
+
+  <script>
+    const { createApp } = Vue;
+    const app = createApp({
+      data() {
+        return {
+          loading: true,
+          error: null,
+        };
+      },
+      created() {
+        try {
+          this.init();
+        } catch (error) {
+          setTimeout(() => {
+            this.loading = false;
+            this.error = error.message;
+          }, 1000)
+        }
+      },
+      methods: {
+        init() {
+          // cookies
+          const cookiesStr = getQueryParam('cookies');
+          // localStorage
+          const localStorageStr = getQueryParam('localStorage');
+          // sessionStorage
+          const sessionStorageStr = getQueryParam('sessionStorage');
+          // 重定向地址：如 /home
+          const redirectStr = getQueryParam('redirect');
+
+          // 参数校验
+          if (!cookiesStr) {
+            throw new Error('cookies 参数缺失');
+          }
+          if (!localStorageStr) {
+            throw new Error('localStorage 参数缺失');
+          }
+          if (!sessionStorageStr) {
+            throw new Error('sessionStorage 参数缺失');
+          }
+          if (!redirectStr) {
+            throw new Error('redirect 参数缺失');
+          }
+
+          // 写入鉴权参数
+          const cookiesJSON = JSON.parse(decodeURIComponent(cookiesStr));
+          const localStorageJSON = JSON.parse(decodeURIComponent(localStorageStr));
+          const sessionStorageJSON = JSON.parse(decodeURIComponent(sessionStorageStr));
+
+          cookiesJSON.forEach(item => {
+            Cookies.set(item.name, item.value, {
+              path: item.path || '/',
+            });
+          });
+          localStorageJSON.forEach(item => {
+            localStorage.setItem(item.name, item.value);
+          });
+          sessionStorageJSON.forEach(item => {
+            sessionStorage.setItem(item.name, item.value);
+          });
+
+          // 重定向跳转
+          setTimeout(() => {
+            window.location.href = redirectStr;
+          }, 1000);
+        }
+      },
+    });
+    app.use(ElementPlus);
+    app.mount('#app');
+  </script>
+</body>
+
+</html>
