@@ -236,6 +236,7 @@ import WfcUtil from "../../../wfc/util/wfcUtil";
 
 import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageContent";
 import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
+import { nextTick } from "vue";
 
 var amr;
 export default {
@@ -839,8 +840,9 @@ export default {
             this.toggleMessageMultiSelectionActionView(message);
         },
 
-        infiniteHandler($state) {
+        async infiniteHandler($state) {
             console.log('to load more message');
+            await nextTick();
             store.loadConversationHistoryMessages(() => {
                 console.log('loaded', this.enableLoadRemoteHistoryMessage)
                 $state.loaded(!this.enableLoadRemoteHistoryMessage);
