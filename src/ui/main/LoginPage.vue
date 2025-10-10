@@ -114,6 +114,7 @@ import WfcScheme from "../../wfcScheme";
 import axios from "axios";
 import avenginekit from "../../wfc/av/internal/engine.min";
 import { getImTokenRefresh } from "../../api/login";
+import { ElLoading } from "element-plus";
 
 export default {
     name: 'LoginPage',
@@ -149,7 +150,12 @@ export default {
         // 初始化IM连接
         // NOTE: 此方法适用于统一认证置换token后，自动登录的场景，不需要手动登录
         async initImConnection() {
-            const { data } = await getImTokenRefresh();
+            const loading = ElLoading.service({
+                lock: true,
+                text: 'IM 连接中，请稍候...',
+                background: 'rgba(255, 255, 255, 1)',
+            })
+            const { data } = await getImTokenRefresh().finally(() => loading.close());
             const userId = data.userId;
             const token = data.token;
             setItem('userId', userId);
@@ -544,7 +550,7 @@ export default {
 
 <style lang="css" scoped>
 .login-container {
-    display: flex;
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;

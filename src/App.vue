@@ -178,6 +178,7 @@ export default {
 }
 
 .blur-container {
+    display: none;
     overflow: hidden;
     height: 100vh;
     width: 100vw;
