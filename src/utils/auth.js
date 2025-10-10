@@ -1,19 +1,15 @@
-import Cookies from 'js-cookie';
+import { getItem, removeItem, setItem } from '../ui/util/storageHelper';
 
 const TokenKey = 'Authorization';
-const options = {
-  // path: process.env.VITE_BASE_URL
-  path: '/',
-};
 
 export function getToken() {
-  return Cookies.get(TokenKey);
+  return getItem(TokenKey);
 }
 
 export function setToken(token) {
-  return Cookies.set(TokenKey, token, options);
+  return setItem(TokenKey, token);
 }
 
 export function removeToken() {
-  return Cookies.remove(TokenKey, options);
+  return removeItem(TokenKey);
 }
