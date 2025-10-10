@@ -113,8 +113,7 @@ import organizationServerApi from "../../api/organizationServerApi";
 import WfcScheme from "../../wfcScheme";
 import axios from "axios";
 import avenginekit from "../../wfc/av/internal/engine.min";
-import { login } from '@/api/login.js'
-import { getQueryParam } from "../../utils";
+import { getImTokenRefresh } from "../../api/login";
 
 export default {
     name: 'LoginPage',
@@ -123,11 +122,11 @@ export default {
             sharedMiscState: store.state.misc,
             qrCode: '',
             userName: '',
-            loginStatus: 0, //0 等待扫码，密码登录或验证码登录时，表示等待登录； 1 已经扫码； 2 存在session，等待发送给客户端验证；3 已经发送登录请求，密码登录或验证码登录时，表示登录中 4 调试时，自动登录
+            loginStatus: 4, //0 等待扫码，密码登录或验证码登录时，表示等待登录； 1 已经扫码； 2 存在session，等待发送给客户端验证；3 已经发送登录请求，密码登录或验证码登录时，表示登录中 4 调试时，自动登录
             qrCodeTimer: null,
             appToken: '',
             lastAppToken: '',
-            loginType: 1, // 0 扫码登录，1 密码登录，2 验证码登录
+            loginType: 0, // 0 扫码登录，1 密码登录，2 验证码登录
             enableAutoLogin: Config.ENABLE_AUTO_LOGIN,
             mobile: '',
             password: '',
@@ -139,30 +138,7 @@ export default {
     },
     created() {
         wfc.eventEmitter.on(EventType.ConnectionStatusChanged, this.onConnectionStatusChange)
-
-        let userId = getItem('userId');
-        let token = getItem('token');
-        if (userId) {
-            let portrait = getItem("userPortrait");
-            this.qrCode = portrait ? portrait : Config.DEFAULT_PORTRAIT_URL;
-
-            let autoLogin = getItem(userId + '-' + 'autoLogin') === '1'
-            if (autoLogin && token) {
-                this.firstTimeConnect = wfc.connect(userId, token);
-                this.loginStatus = 4;
-            } else {
-                this.loginStatus = 2;
-                isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
-            }
-        } else {
-            isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
-            this.refreshQrCode();
-        }
-
-        // 临时登录，用于测试
-        if (!userId || !token) {
-          this.loginTemp();
-        }
+        this.initImConnection();
     },
 
     beforeUnmount() {
@@ -170,6 +146,32 @@ export default {
     },
 
     methods: {
+        // 初始化IM连接
+        // NOTE: 此方法适用于统一认证置换token后，自动登录的场景，不需要手动登录
+        async initImConnection() {
+            const { data } = await getImTokenRefresh();
+            const userId = data.userId;
+            const token = data.token;
+            setItem('userId', userId);
+            setItem('token', token);
+
+            if (userId) {
+                let portrait = getItem("userPortrait");
+                this.qrCode = portrait ? portrait : Config.DEFAULT_PORTRAIT_URL;
+
+                let autoLogin = getItem(userId + '-' + 'autoLogin') === '1'
+                if (autoLogin && token) {
+                    this.firstTimeConnect = wfc.connect(userId, token);
+                    this.loginStatus = 4;
+                } else {
+                    this.loginStatus = 2;
+                    isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
+                }
+            } else {
+                isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
+                this.refreshQrCode();
+            }
+        },
         register() {
             this.$notify({
                 text: '使用短信验证码登录，将会为您创建账户，请使用短信验证码登录',
@@ -205,18 +207,6 @@ export default {
                         type: 'error'
                     });
                 })
-        },
-
-        async loginTemp() {
-          const userId = getQueryParam('userId')
-          if (!userId) {
-            alert('url中缺少userId参数')
-            return
-          }
-          const { data } = await login(userId)
-          this.firstTimeConnect = wfc.connect(data?.userId, data?.token)
-          setItem('userId', data?.userId)
-          setItem('token', data?.token)
         },
 
         async loginWithPassword() {
