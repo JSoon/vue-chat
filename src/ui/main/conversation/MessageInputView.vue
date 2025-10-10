@@ -46,7 +46,7 @@
                     </li>
                 </ul>
                 <ul>
-                    <template v-if="!inputOptions['disableVoip']  && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
+                    <!-- <template v-if="!inputOptions['disableVoip']  && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
                         <li v-if="!inputOptions['disableAudioCall']">
                             <i @click="startAudioCall" class="icon-ion-ios-telephone"/>
                         </li>
@@ -56,7 +56,7 @@
                         <li v-if="sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
                             <i @click="requestRemoteControl" class="icon-ion-android-desktop"/>
                         </li>
-                    </template>
+                    </template> -->
                     <li v-if="!inputOptions['disableChannelMenu'] && conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length">
                         <i @click="toggleChannelMenu" class="icon-ion-android-menu"/>
                     </li>

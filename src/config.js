@@ -5,9 +5,9 @@ export default class Config {
     // 调试用
     static ENABLE_AUTO_LOGIN = true;
     // 是否支持多人音视频通话
-    static ENABLE_MULTI_VOIP_CALL = true;
+    static ENABLE_MULTI_VOIP_CALL = false;
     // 是否支持1对1音视频通话
-    static ENABLE_SINGLE_VOIP_CALL = true;
+    static ENABLE_SINGLE_VOIP_CALL = false;
     // 打开voip调试模式时，voip window不会自动关闭，方便分析控制台日志，需要手动关闭。
     static ENABLE_VOIP_DEBUG_MODE = false;
 
@@ -136,7 +136,7 @@ export default class Config {
     static ENABLE_MULTI_CALL_AUTO_JOIN = false;
 
     // 需要专业版 im-server 才支持，是否打开语音对讲功能，和对讲机类似的功能，不是发送语音消息
-    static ENABLE_PTT = true;
+    static ENABLE_PTT = false;
 
     // 是否支持图文混排、文件文本混排，目前之后 pc 端支持，故默认关闭
     static ENABLE_MIX_MEDIA_MESSAGE = false;

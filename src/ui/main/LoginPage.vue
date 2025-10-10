@@ -165,8 +165,7 @@ export default {
                 let portrait = getItem("userPortrait");
                 this.qrCode = portrait ? portrait : Config.DEFAULT_PORTRAIT_URL;
 
-                let autoLogin = getItem(userId + '-' + 'autoLogin') === '1'
-                if (autoLogin && token) {
+                if (token) {
                     this.firstTimeConnect = wfc.connect(userId, token);
                     this.loginStatus = 4;
                 } else {
