@@ -36,10 +36,11 @@ export default class Config {
 
     // APP SERVER的地址，启用https时，APP SERVER也需要支持https
     // 默认的app server使用端口是8888
-    static APP_SERVER = 'https://app.wildfirechat.net';
+    // static APP_SERVER = 'https://app.wildfirechat.net';
+    static APP_SERVER = process.env.VUE_APP_BASE_API;
 
     // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
-    static ASR_SERVER = 'https://app.wildfirechat.net/asr/api/recognize';
+    // static ASR_SERVER = 'https://app.wildfirechat.net/asr/api/recognize';
 
     // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
     // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
