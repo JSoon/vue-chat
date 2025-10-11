@@ -12,4 +12,5 @@ src/pstore.js
 src/main.js
 src/api/appServerApi.js
 src/ui
+src/wfc
 src/App.vue

@@ -1,4 +1,4 @@
-import { getItem, removeItem, setItem } from '../ui/util/storageHelper';
+import { getItem, removeItem, setItem } from '@/ui/util/storageHelper';
 
 const TokenKey = 'Authorization';
 

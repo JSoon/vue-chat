@@ -113,7 +113,7 @@ import organizationServerApi from "../../api/organizationServerApi";
 import WfcScheme from "../../wfcScheme";
 import axios from "axios";
 import avenginekit from "../../wfc/av/internal/engine.min";
-import { getImTokenRefresh } from "../../api/login";
+import { getImTokenRefresh } from "../../custom/api/login";
 import { ElLoading } from "element-plus";
 
 export default {
