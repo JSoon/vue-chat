@@ -32,6 +32,7 @@ import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
 import CustomMessageConfig from "./wfc_custom_message/customMessageConfig";
 
 import 'element-plus/dist/index.css';
+import './custom/style.scss';
 
 // Vue.config.productionTip = false
 
