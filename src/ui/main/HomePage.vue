@@ -53,13 +53,13 @@
                                 <em v-show="sharedContactState.unreadFriendRequestCount > 0" class="badge">{{ sharedContactState.unreadFriendRequestCount > 99 ? '99' : sharedContactState.unreadFriendRequestCount }}</em>
                             </div>
                         </li>
-                        <li>
+                        <!-- <li>
                             <div class="menu-item"
                                  v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/fav' }"
                                  @click="go2Fav">
                                 <inline-svg :src="require('@/custom/assets/icons/favorites.svg')" />
                             </div>
-                        </li>
+                        </li> -->
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
                             <i class="icon-ion-ios-folder"
                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/files' }"
