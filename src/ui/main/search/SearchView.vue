@@ -7,7 +7,9 @@
                @keydown.esc="cancel"
                type="text" :placeholder="placeHolder"/>
         <i class="icon-ion-ios-search"></i>
-        <button v-if="showAddButton" @click="showCreateConversationModal">+</button>
+        <button v-if="showAddButton" @click="showCreateConversationModal">
+            <inline-svg :src="require('@/custom/assets/icons/plus.svg')" width="16" height="16" />
+        </button>
     </div>
 </template>
 

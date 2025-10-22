@@ -36,25 +36,29 @@
                 <nav class="menu">
                     <ul>
                         <li>
-                            <div class="menu-item">
-                                <i class="icon-ion-ios-chatboxes"
-                                   v-bind:class="{ active: this.$router.currentRoute.value.path === '/home' }"
-                                   @click="go2Conversation"></i>
+                            <div
+                                class="menu-item"
+                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home' }"
+                                @click="go2Conversation"
+                            >
+                                <inline-svg :src="require('@/custom/assets/icons/chat.svg')" />
                                 <em v-show="unread > 0" class="badge">{{ unread > 99 ? '···' : unread }}</em>
                             </div>
                         </li>
                         <li>
-                            <div class="menu-item">
-                                <i class="icon-ion-android-contact"
-                                   v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/contact' }"
-                                   @click="go2Contact"></i>
+                            <div class="menu-item"
+                                 v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/contact' }"
+                                 @click="go2Contact">
+                                <inline-svg :src="require('@/custom/assets/icons/contacts.svg')" />
                                 <em v-show="sharedContactState.unreadFriendRequestCount > 0" class="badge">{{ sharedContactState.unreadFriendRequestCount > 99 ? '99' : sharedContactState.unreadFriendRequestCount }}</em>
                             </div>
                         </li>
                         <li>
-                            <i class="icon-ion-android-favorite"
-                               v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/fav' }"
-                               @click="go2Fav"></i>
+                            <div class="menu-item"
+                                 v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/fav' }"
+                                 @click="go2Fav">
+                                <inline-svg :src="require('@/custom/assets/icons/favorites.svg')" />
+                            </div>
                         </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
                             <i class="icon-ion-ios-folder"
@@ -77,10 +81,13 @@
                                @click="go2AI"></i>
                         </li>
                         <li>
-                            <i v-show="this.$router.currentRoute.value.path !== '/home/ai'"
-                               class="icon-ion-android-settings"
-                               v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/setting' }"
-                               @click="go2Setting"></i>
+                            <div
+                                v-show="this.$router.currentRoute.value.path !== '/home/ai'"
+                                class="menu-item"
+                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/setting' }"
+                                @click="go2Setting">
+                                <inline-svg :src="require('@/custom/assets/icons/settings.svg')" />
+                            </div>
                         </li>
                     </ul>
                 </nav>

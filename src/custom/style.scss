@@ -1,3 +1,142 @@
+// 用户/群组头像
 .avatar {
   object-fit: cover;
+  border-radius: 8px !important;
+}
+
+// 侧边菜单
+.menu-container {
+  padding: 15px 0 !important;
+  background-color: white !important;
+  border-right: 1px solid #e5e9f1;
+
+  // 响应式宽度设置 - 当屏幕宽度小于1024px时，宽度为50px
+  @media (max-width: 1023px) {
+    width: 50px !important;
+    min-width: 50px !important;
+  }
+
+  > div:first-child {
+    display: none;
+  }
+
+  .menu ul {
+    li {
+      margin: 0;
+      padding: 0;
+      height: auto;
+      line-height: normal;
+      &:last-child {
+        margin-bottom: 0;
+        .menu-item {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  .menu-item {
+    display: flex;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    &.active {
+      background-color: rgba(#0074ff, 0.08);
+      color: #0074ff;
+    }
+  }
+}
+
+// 搜索框
+.conversation-list-panel-container,
+.contact-list-panel-container,
+.fav-category-list-panel-container {
+  .search-input-container {
+    gap: 8px;
+    height: auto;
+    padding: 15px 12px;
+    background-color: white;
+    input {
+      flex: 1;
+      width: auto;
+      height: 36px;
+      margin: 0;
+      padding-left: 30px;
+      padding-right: 10px;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+      border-color: #e5e9f1;
+      font-size: 14px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      &:focus {
+        background-color: white;
+      }
+    }
+    i {
+      left: 22px;
+    }
+    button {
+      width: 36px;
+      height: 36px;
+      margin: 0;
+      background-color: white;
+      border-radius: 8px;
+      border-color: #e5e9f1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+
+// 会话列表
+.conversation-list-panel-container {
+  // 会话列表响应式宽度设置
+  // 默认.conversation-list-panel已经有260px宽度样式
+  // 当屏幕宽度小于1024px时，宽度为230px
+  @media (max-width: 1023px) {
+    &.conversation-list-panel {
+      width: 230px !important;
+    }
+  }
+  .panel {
+    background-color: white;
+  }
+  .conversation-item-container {
+    background-color: white;
+    &.active {
+      background-color: #f3f7ff;
+    }
+  }
+}
+
+// 会话消息
+.conversation-view {
+  .title-container {
+    background-color: white;
+  }
+
+  .conversation-empty-container {
+    background-color: #f4f8ff;
+  }
+
+  .conversation-content-container {
+    background-color: #f4f8ff;
+  }
+
+  .message-time-container .time {
+    background-color: transparent;
+  }
+
+  .message-input-container {
+    background-color: white;
+  }
+
+  .divider-handler {
+    &::before {
+      height: 1px;
+    }
+  }
 }

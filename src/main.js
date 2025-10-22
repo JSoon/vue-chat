@@ -10,6 +10,7 @@ import 'tippy.js/dist/tippy.css'
 import 'tippy.js/themes/light.css'
 
 import VueContext from '@madogai/vue-context/dist/vue-context';
+import InlineSvg from 'vue-inline-svg';
 
 import VModal from './vendor/vue-js-modal'
 import './global.css'
@@ -117,6 +118,7 @@ app.use(
 app.use(VueContext);
 app.component("vue-context", VueContext)
 app.component('virtual-list', VirtualList);
+app.component('inline-svg', InlineSvg)
 
 app.use(VModal);
 
