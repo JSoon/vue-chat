@@ -22,10 +22,7 @@
                             />
                         </a>
                         <a href="#" v-bind:class="{active : showConversationInfo}" @click.prevent="toggleConversationInfo">
-                            <i class="icon-ion-ios-settings-strong"
-                               style="display: inline-block"
-                               ref="setting"
-                            />
+                            <inline-svg ref="setting" :src="require('@/custom/assets/icons/chat-info.svg')" />
                         </a>
                     </div>
                 </div>

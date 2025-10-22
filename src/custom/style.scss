@@ -47,7 +47,7 @@
   }
 }
 
-// 搜索框
+// 用户搜索框
 .conversation-list-panel-container,
 .contact-list-panel-container,
 .fav-category-list-panel-container {
@@ -87,6 +87,25 @@
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+  }
+}
+
+// 文本输入框
+.input-action-container {
+  ul {
+    display: flex;
+    gap: 8px;
+    padding: 0 15px;
+    li {
+      margin: 0 !important;
+      padding: 5px;
+      border-radius: 4px;
+      line-height: 1;
+      &:focus,
+      &:hover {
+        background-color: #f3f5f9;
+      }
     }
   }
 }

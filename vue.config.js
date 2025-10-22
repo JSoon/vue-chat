@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack')
 const PreloadPlugin = require('@vue/preload-webpack-plugin')
+const openInEditor = require('launch-editor-middleware')
 
 function resolve(dir) {
     return path.join(__dirname, dir);
@@ -9,7 +10,17 @@ function resolve(dir) {
 module.exports = {
     devServer: {
         allowedHosts: 'all',
-        port: 8013
+        port: 8013,
+        setupMiddlewares: (middlewares, devServer) => {
+            if (!devServer) {
+                throw new Error('webpack-dev-server is not defined');
+            }
+            
+            // 配置launch-editor-middleware
+            devServer.app.use('/__open-in-editor', openInEditor('trae'));
+            
+            return middlewares;
+        }
     },
     publicPath: process.env.VUE_BASE_URL,
     outputDir: 'dist',

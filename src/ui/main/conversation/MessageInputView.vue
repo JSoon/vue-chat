@@ -19,10 +19,10 @@
                 />
                 <ul>
                     <li v-if="!inputOptions['disableEmoji']">
-                        <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart"/>
+                        <inline-svg id="showEmoji" :src="require('@/custom/assets/icons/emoji.svg')" @click="toggleEmojiView" />
                     </li>
                     <li v-if="!inputOptions['disableFile']">
-                        <i @click="pickFile" class="icon-ion-android-attach"/>
+                        <inline-svg @click="pickFile" :src="require('@/custom/assets/icons/folder.svg')" />
                         <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
                                style="display: none">
                     </li>
@@ -41,8 +41,13 @@
                            class="icon-ion-android-radio-button-on ptt-icon"/>
                     </li>
                     <li>
-                        <i id="voice" v-bind:class="{active: isRecording}" @mousedown="recordAudio(true)"
-                           class="icon-ion-android-microphone record-icon"/>
+                        <inline-svg
+                            id="voice"
+                            class="record-icon"
+                            v-bind:class="{active: isRecording}"
+                            @mousedown="recordAudio(true)"
+                            :src="require('@/custom/assets/icons/voice.svg')"
+                        />
                     </li>
                 </ul>
                 <ul>
