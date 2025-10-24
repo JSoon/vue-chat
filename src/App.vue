@@ -121,9 +121,6 @@ export default {
                 });
             }
         })
-        if(Config.ENABLE_WATER_MARK){
-            waterMark.init()
-        }
     },
     beforeUnmount() {
         this.$eventBus.$off('uploadFile');

@@ -115,6 +115,7 @@ import axios from "axios";
 import avenginekit from "../../wfc/av/internal/engine.min";
 import { getImTokenRefresh } from "../../custom/api/login";
 import { ElLoading } from "element-plus";
+import waterMark from "../util/waterMark";
 
 export default {
     name: 'LoginPage',
@@ -413,6 +414,9 @@ export default {
             }
 
             if (status === ConnectionStatus.ConnectionStatusConnected) {
+                if(Config.ENABLE_WATER_MARK){
+                    waterMark.init()
+                }
                 if (isElectron()) {
                     ipcRenderer.send(IpcEventType.LOGIN, {closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1'})
                 }
