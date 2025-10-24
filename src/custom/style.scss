@@ -40,17 +40,24 @@
     margin-bottom: 15px;
     padding: 10px;
     border-radius: 8px;
-    &.active {
+    color: #555;
+    &:hover {
       background-color: rgba(#0074ff, 0.08);
+    }
+    &.active {
       color: #0074ff;
+    }
+    .badge {
+      top: 0 !important;
+      right: 0 !important;
     }
   }
 }
 
-// 用户搜索框
 .conversation-list-panel-container,
 .contact-list-panel-container,
 .fav-category-list-panel-container {
+  // 用户搜索框
   .search-input-container {
     gap: 8px;
     height: auto;
@@ -89,6 +96,9 @@
       align-items: center;
     }
   }
+  .panel {
+    background-color: white;
+  }
 }
 
 // 文本输入框
@@ -120,13 +130,15 @@
       width: 230px !important;
     }
   }
-  .panel {
-    background-color: white;
-  }
   .conversation-item-container {
     background-color: white;
     &.active {
       background-color: #f3f7ff;
+    }
+  }
+  .header {
+    .badge {
+      right: 4px;
     }
   }
 }
@@ -145,6 +157,10 @@
     background-color: #f4f8ff;
   }
 
+  .conversation-message-list {
+    padding-bottom: 1em;
+  }
+
   .message-time-container .time {
     background-color: transparent;
   }
@@ -156,7 +172,25 @@
 
   .divider-handler {
     &::before {
-      height: 1px;
+      background-color: white;
+    }
+  }
+}
+
+// 通讯录列表
+.contact-list-panel-container {
+  &.contact-list-panel {
+    background-color: white;
+  }
+  .category-item-container {
+    background-color: white;
+  }
+  .label {
+    margin-bottom: 5px;
+    color: #999;
+    background-color: white;
+    p {
+      border-color: #eee;
     }
   }
 }
