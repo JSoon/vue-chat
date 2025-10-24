@@ -120,6 +120,16 @@
   }
 }
 
+.conversation-empty-container,
+.contact-empty-container {
+  background-color: #f4f8ff !important;
+  // 空内容占位logo
+  .empty-logo {
+    width: 72px;
+    opacity: 0.1;
+  }
+}
+
 // 会话列表
 .conversation-list-panel-container {
   // 会话列表响应式宽度设置
@@ -147,10 +157,6 @@
 .conversation-view {
   .title-container {
     background-color: white;
-  }
-
-  .conversation-empty-container {
-    background-color: #f4f8ff;
   }
 
   .conversation-content-container {

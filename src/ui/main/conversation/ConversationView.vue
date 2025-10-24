@@ -1,7 +1,7 @@
 <template>
     <section>
         <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
-            <h1>^~^</h1>
+            <img src="@/custom/assets/icons/empty-logo.png" class="empty-logo" />
         </div>
         <div v-else class="conversation-container">
             <header>

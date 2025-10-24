@@ -28,7 +28,7 @@
             :friend-request="sharedContactState.currentFriendRequest"
             class="contact-detail-container"/>
         <div v-else class="contact-empty-container">
-            <h1>^~^</h1>
+            <img src="@/custom/assets/icons/empty-logo.png" class="empty-logo" />
         </div>
     </div>
 </template>
