@@ -57,6 +57,12 @@
 .conversation-list-panel-container,
 .contact-list-panel-container,
 .fav-category-list-panel-container {
+  // 响应式宽度设置
+  // 默认.conversation-list-panel已经有260px宽度样式
+  // 当屏幕宽度小于1024px时，宽度为230px
+  @media (max-width: 1023px) {
+    width: 230px !important;
+  }
   // 用户搜索框
   .search-input-container {
     gap: 8px;
@@ -66,6 +72,7 @@
     input {
       flex: 1;
       width: auto;
+      min-width: 0px; // 最小宽度为0，避免搜索框宽度flex:1失效
       height: 36px;
       margin: 0;
       padding-left: 30px;
@@ -132,14 +139,6 @@
 
 // 会话列表
 .conversation-list-panel-container {
-  // 会话列表响应式宽度设置
-  // 默认.conversation-list-panel已经有260px宽度样式
-  // 当屏幕宽度小于1024px时，宽度为230px
-  @media (max-width: 1023px) {
-    &.conversation-list-panel {
-      width: 230px !important;
-    }
-  }
   .conversation-item-container {
     background-color: white;
     &.active {
