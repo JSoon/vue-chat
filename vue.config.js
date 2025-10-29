@@ -33,6 +33,8 @@ module.exports = {
         resolve: {
             alias: {
                 '@': resolve('src'),
+                // 配置imwebsdk别名，用于在wfc.js中引入正确的proto库
+                'imwebsdk': process.env.VUE_APP_ENV === 'production' ? resolve('src/wfc/proto/proto.prod.min.js') : resolve('src/wfc/proto/proto.min.js'),
             },
             fallback: {
                 'path': false,

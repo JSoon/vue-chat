@@ -6,7 +6,7 @@ import {EventEmitter} from 'events';
 import {atob, btoa} from '../util/base64.min.js';
 import Long from 'long';
 
-import impl from '../proto/proto.min';
+import impl from 'imwebsdk';
 import Config from "../../config";
 import avenginekit from "../av/engine/avenginekitproxy";
 import pttClient from "../ptt/client/pttClient";
