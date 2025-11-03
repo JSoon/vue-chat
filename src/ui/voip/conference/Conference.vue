@@ -252,6 +252,7 @@ import {vOnClickOutside} from '@vueuse/components'
 
 import {markRaw} from "vue";
 import EventType from "../../../wfc/client/wfcEvent";
+import WfcAVEngineKit from "../../../wfc/av/engine/avenginekit";
 
 export default {
     name: 'Conference',
@@ -384,7 +385,6 @@ export default {
                 console.log('oninitial', selfUserInfo._isAudience)
                 // pls refer to: https://vuejs.org/v2/guide/reactivity.html
                 this.$set(this.selfUserInfo, '_stream', null);
-                this.$set(this.selfUserInfo, '_screenShareStream', null);
                 this.$set(this.selfUserInfo, '_isScreenSharing', false);
                 this.participantUserInfos.forEach(p => this.$set(p, "_stream", null))
 
@@ -398,10 +398,17 @@ export default {
 
             sessionCallback.didCreateLocalVideoTrack = (stream, screenShare) => {
                 console.log('didCreateLocalVideoTrack', screenShare)
+                if(WfcAVEngineKit.SCREEN_SHARING_REPLACE_MODE || !screenShare){
                     this.selfUserInfo._stream = stream;
-                    this.selfUserInfo._screenShareStream = null;
                     this.selfUserInfo._isVideoMuted = false;
-                this.selfUserInfo._isScreenSharing = screenShare;
+                    this.selfUserInfo._isScreenSharing = screenShare;
+                } else {
+                    let selfScreenShareUserInfo = Object.assign(new UserInfo(), this.selfUserInfo);
+                    selfScreenShareUserInfo._stream = stream;
+                    selfScreenShareUserInfo._isVideoMuted = false;
+                    selfScreenShareUserInfo._isScreenSharing = true;
+                    this.participantUserInfos.splice(1, 0, selfScreenShareUserInfo);
+                }
                 this.autoPlay();
             };
 
@@ -429,12 +436,13 @@ export default {
             sessionCallback.didReceiveRemoteVideoTrack = (userId, stream, screenSharing) => {
                 let p;
                 console.log('didReceiveRemoteVideoTrack', userId, stream, screenSharing);
-                let index = -1;
                 for (let i = 0; i < this.participantUserInfos.length; i++) {
                     p = this.participantUserInfos[i];
                     if (p.uid === userId && p._isScreenSharing === screenSharing) {
-                        index = i;
                         p._stream = stream;
+                        let s = this.session.getSubscriber(userId, screenSharing);
+                        p._isVideoMuted = s.videoMuted;
+                        p._isAudioMuted = s.audioMuted;
                         p._stream.timestamp = new Date().getTime();
                         break;
                     }
@@ -450,7 +458,11 @@ export default {
             };
 
             sessionCallback.didParticipantJoined = (userId, screenSharing) => {
-                console.log('didParticipantJoined', userId, screenSharing)
+                console.log('didParticipantJoined', userId, screenSharing, this.participantUserInfos.length)
+                let index = this.participantUserInfos.findIndex(p => p.uid === userId && p._isScreenSharing === screenSharing);
+                if(index >= 0) {
+                    return;
+                }
                 let userInfo = wfc.getUserInfo(userId);
                 let subscriber = this.session.getSubscriber(userId, screenSharing);
                 userInfo._stream = subscriber.stream;
@@ -463,7 +475,7 @@ export default {
                 // 动态添加的属性不是 reactive 的，故直接创建个新的对象
                 // 其实这个问题很奇怪，只有发起会议，第一次进入该会议的时候，其他端加入，参与者列表会不刷新；重新进入等，都一切正常
                 this.participantUserInfos.push(Object.assign(new UserInfo(), userInfo));
-                console.log('joined', userInfo, subscriber.audience, this.participantUserInfos.length);
+                console.log('joined', userInfo, subscriber, subscriber.audience, this.participantUserInfos.length);
             }
 
             sessionCallback.didParticipantLeft = (userId, endReason, screenSharing) => {
@@ -572,14 +584,16 @@ export default {
                         this.selfUserInfo._isVideoMuted = this.session.videoMuted;
                         return;
                     }
-                    let s = this.session.getSubscriber(p);
+                    p = p.startsWith('screen_sharing_') ? p.substring('screen_sharing_'.length) : p;
+                    let screenSharing = p.startsWith('screen_sharing_');
+                    let s = this.session.getSubscriber(p, screenSharing);
                     if (!s) {
                         return;
                     }
-                    console.log('conference', 'didMuteStateChanged', p, s.videoMuted, s.audioMuted);
+                    console.log('conference', 'didMuteStateChanged', p, screenSharing, s.videoMuted, s.audioMuted);
                     this.participantUserInfos.forEach(u => {
-                        if (u.uid === p && u._isScreenSharing === false) {
-                            let subscriber = this.session.getSubscriber(p);
+                        if (u.uid === p && u._isScreenSharing === screenSharing) {
+                            let subscriber = this.session.getSubscriber(p, screenSharing);
                             u._isVideoMuted = subscriber.videoMuted;
                             u._isAudioMuted = subscriber.audioMuted;
                             if (this.speakingVideoParticipant && this.speakingVideoParticipant.uid === u.uid) {
@@ -1142,8 +1156,9 @@ export default {
                 sp = this.conferenceFocusUser;
             } else if (this.conferenceLocalFocusUser && !this.conferenceLocalFocusUser._isVideoMuted) {
                 sp = this.conferenceLocalFocusUser;
-            } else if (this.speakingVideoParticipant) {
-                sp = this.speakingVideoParticipant;
+            // 可能会导致焦点用户切换太快，故注释掉
+            // } else if (this.speakingVideoParticipant) {
+            //     sp = this.speakingVideoParticipant;
             } else {
                 sp = this.participantUserInfos.find(u => !u._isAudience && !u._isVideoMuted && u._isScreenSharing === true);
                 if (!sp) {
@@ -1246,27 +1261,32 @@ export default {
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-width', width);
                         this.$refs.rootContainer.style.setProperty('--participant-video-item-height', height);
                     }
-                }
-
-                if (oldCurrentPageParticipants) {
-                    oldCurrentPageParticipants.forEach(u => {
-                        let newIndex = newCurrentPageParticipants.findIndex(nu => nu.uid === u.uid && nu._isScreenSharing === u._isScreenSharing);
-                        if(newIndex > -1) {
-                            return;
-                        }
-                        if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
-                            return
-                        }
-                        this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.NONE);
-                    })
-                }
-                if (newCurrentPageParticipants) {
-                    newCurrentPageParticipants.forEach(u => {
-                        if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
-                            return
-                        }
-                        this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.BIG_STREAM);
-                    })
+           
+                    // 宫格布局时，订阅当前显示的用户大流，不显示的不订阅视频流
+                    if (oldCurrentPageParticipants) {
+                        oldCurrentPageParticipants.forEach(u => {
+                            let newIndex = newCurrentPageParticipants.findIndex(nu => nu.uid === u.uid && nu._isScreenSharing === u._isScreenSharing);
+                            if(newIndex > -1) {
+                                return;
+                            }
+                            if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
+                                return
+                            }
+                            this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.NONE);
+                        })
+                    }
+                    if (newCurrentPageParticipants) {
+                        newCurrentPageParticipants.forEach(u => {
+                            let oldIndex = oldCurrentPageParticipants.findIndex(ou => ou.uid === u.uid && ou._isScreenSharing === u._isScreenSharing);
+                            if(oldIndex > -1) {
+                                return;
+                            }
+                            if (u.uid === this.selfUserInfo.uid || u._isAudience || u._isVideoMuted) {
+                                return
+                            }
+                            this.session.setParticipantVideoType(u.uid, u._isScreenSharing, VideoType.BIG_STREAM);
+                        })
+                    }
                 }
             }
         },

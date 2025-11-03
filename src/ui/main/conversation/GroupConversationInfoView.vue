@@ -86,6 +86,8 @@ import ModifyGroupInfoType from "../../../wfc/model/modifyGroupInfoType";
 import EventType from "../../../wfc/client/wfcEvent";
 import appServerApi from "../../../api/appServerApi";
 import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
+import MessageContentType from "../../../wfc/messages/messageContentType";
+import {isElectron} from "../../../platform";
 
 export default {
     name: "GroupConversationInfoView",
@@ -97,7 +99,7 @@ export default {
     },
     data() {
         return {
-            groupMemberUserInfos: store.getConversationMemberUsrInfos(this.conversationInfo.conversation),
+            groupMemberUserInfos: [],
             filterQuery: '',
             sharedContactState: store.state.contact,
             sharedMiscState: store.state.misc,
@@ -112,19 +114,33 @@ export default {
     mounted() {
         wfc.eventEmitter.on(EventType.UserInfosUpdate, this.onUserInfosUpdate);
         wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onUserInfosUpdate)
+        wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage)
         wfc.getGroupMembers(this.conversationInfo.conversation.target, true);
 
         let userInfo = wfc.getUserInfo(wfc.getUserId(), false, this.conversationInfo.conversation.target);
         this.groupAlias = userInfo.groupAlias ? userInfo.groupAlias : userInfo.displayName;
+        this.loadGroupMemberUserInfos();
     },
 
     beforeUnmount() {
         wfc.eventEmitter.removeListener(EventType.UserInfosUpdate, this.onUserInfosUpdate);
         wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onUserInfosUpdate);
+        wfc.eventEmitter.removeListener(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 
     components: {UserListView},
     methods: {
+        onReceiveMessage(msg, hasMore){
+            if(msg.conversation.equal(this.conversationInfo.conversation) && msg.messageContent.type === MessageContentType.RejectJoinGroup){
+                let content = msg.messageContent;
+                if(content.operator === wfc.getUserId()){
+                    this.$notify({
+                        text: content.formatNotification(msg),
+                        type: 'warn'
+                    });
+                }
+            }
+        },
         onUserInfosUpdate() {
             this.groupMemberUserInfos = store.getConversationMemberUsrInfos(this.conversationInfo.conversation);
         },
@@ -277,9 +293,25 @@ export default {
 
         clearRemoteConversationHistory() {
             wfc.clearRemoteConversationMessages(this.conversationInfo.conversation);
+        },
+
+        async loadGroupMemberUserInfos(){
+            let groupId = this.conversationInfo.conversation.target;
+            if(isElectron()){
+                let memberIds = wfc.getGroupMemberIds(groupId, true);
+                const step = 500;
+                for (let i = 0; i < memberIds.length;) {
+                    let ids = memberIds.slice(i, i + step)
+                    i += step;
+                    let userInfos = await store.getPartialGroupMembersInfoAsync(groupId, ids)
+                    this.groupMemberUserInfos.push(...userInfos);
+                }
+            } else {
+              this.groupMemberUserInfos = store.getGroupMemberUserInfos(groupId);
+            }
         }
     },
-
+      
     created() {
         this.getGroupAnnouncement();
     },
@@ -294,11 +326,15 @@ export default {
         },
 
         clickGroupMemberItemFunc() {
+            console.log('clickGroupMemberItemFunc');
             let groupInfo = this.conversationInfo.conversation._target;
             let groupMember = wfc.getGroupMember(this.conversationInfo.conversation.target, wfc.getUserId());
             if (groupInfo.privateChat === 1 && [GroupMemberType.Manager, GroupMemberType.Owner].indexOf(groupMember.type) === -1) {
                 return () => {
                     // 群里面，禁止发起私聊
+                    this.$notify({
+                        text: '禁止发起私聊'
+                    })
                 };
             }
             return null;

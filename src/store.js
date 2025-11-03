@@ -48,6 +48,7 @@ import CallStartMessageContent from "./wfc/av/messages/callStartMessageContent";
 import SoundMessageContent from "./wfc/messages/soundMessageContent";
 import MixMultiMediaTextMessageContent from "./wfc/messages/mixMultiMediaTextMessageContent";
 import MixFileTextMessageContent from "./wfc/messages/mixFileTextMessageContent";
+import Long from "long";
 
 /**
  * 一些说明
@@ -130,7 +131,6 @@ let store = {
             this._loadDefaultConversationList();
             this._loadFavContactList();
             this._loadFavGroupList();
-            this._loadChannelList();
             this.updateTray();
             // 清除远程消息时，WEB SDK会同时触发ConversationInfoUpdate 和 setting更新，但PC SDK不会，只会触发setting更新
             // if (isElectron()) {
@@ -459,7 +459,7 @@ let store = {
 
                 conversationState.downloadingMessages = conversationState.downloadingMessages.filter(v => !eq(v.messageUid, messageUid));
                 let msg = wfc.getMessageByUid(messageUid);
-                console.log('xxxxx downloaded file', msg)
+                console.log('downloaded file', msg)
                 if (msg) {
                     msg.messageContent.localPath = localPath;
                     wfc.updateMessageContent(msg.messageId, msg.messageContent);
@@ -515,9 +515,12 @@ let store = {
         this._loadUserLocalSettings();
         conversationState.isMessageReceiptEnable = wfc.isReceiptEnabled() && wfc.isUserReceiptEnabled();
         conversationState.isGroupMessageReceiptEnable = wfc.isGroupReceiptEnabled() && wfc.isUserReceiptEnabled();
-        // if (conversationState.currentConversationInfo) {
-        //     this._loadCurrentConversationMessages();
-        // }
+        // 休眠恢复之后，重新连接成功时，可能出现会话列表的 lastMessage 在会话界面未显示，需要判断是否需要重新加载当前会话的消息
+        if (conversationState.currentConversationInfo) {
+            if(gt(conversationState.currentConversationInfo.timestamp, 0) && (conversationState.currentConversationMessageList.length === 0 || !eq(conversationState.currentConversationInfo.timestamp, conversationState.currentConversationMessageList[conversationState.currentConversationMessageList.length - 1].timestamp))){
+                this._loadCurrentConversationMessages();
+            }
+        }
     },
 
     // conversation actions
@@ -1300,6 +1303,7 @@ let store = {
         let conversation = conversationState.currentConversationInfo.conversation;
         console.log('loadConversationHistoryMessage', conversation, conversationState.currentConversationOldestMessageId, stringValue(conversationState.currentConversationOldestMessageUid));
         let loadRemoteHistoryMessageFunc = () => {
+            console.log('loadRemoteConversationMessages', conversation, conversationState.currentConversationOldestMessageUid);
             wfc.loadRemoteConversationMessages(conversation, [], conversationState.currentConversationOldestMessageUid, 20,
                 (msgs) => {
                     console.log('loadRemoteConversationMessages response', msgs.length);
@@ -1308,15 +1312,15 @@ let store = {
                     } else {
                         // 可能拉回来的时候，本地已经切换会话了
                         if (conversation.equal(conversationState.currentConversationInfo.conversation)) {
+                            conversationState.currentConversationOldestMessageUid = msgs[0].messageUid;
                             let filteredMsgs = msgs.filter(m => {
                                 return m.messageId !== 0 && conversationState.currentConversationMessageList.findIndex(cm => eq(cm.messageUid, m.messageUid)) === -1
                             })
                             if (filteredMsgs.length === 0) {
-                                completeCB()
+                                loadedCB();
                                 return;
                             }
 
-                            conversationState.currentConversationOldestMessageUid = filteredMsgs[0].messageUid;
                             this._onloadConversationMessages(conversation, filteredMsgs);
                             loadedCB();
                         }
@@ -1625,6 +1629,7 @@ let store = {
                 u._displayNameIgnoreFriendAlias = wfc.getGroupMemberDisplayNameEx(u, true);
             } else {
                 u._displayName = wfc.getUserDisplayNameEx(u);
+                u._displayNameIgnoreFriendAlias = u.displayName
             }
             u._pinyin = convert(u._displayName, {style: 0}).join('').trim().toLowerCase();
             let firstLetter = u._pinyin[0];
@@ -1763,6 +1768,10 @@ let store = {
 
     toggleChannelList() {
         contactState.expandChanel = !contactState.expandChanel;
+        // 从服务端拉取，且比较耗性能，故展开时，才从刷新
+        if(contactState.expandChanel) {
+            this._loadChannelList();
+        }
     },
 
     toggleFriendRequestList() {
@@ -2054,6 +2063,12 @@ let store = {
     },
 
     // clone一下，别影响到好友列表
+    /**
+     * @param groupId
+     * @param includeSelf
+     * @param sortByPinyin
+     * @return {*}
+     */
     getGroupMemberUserInfos(groupId, includeSelf = true, sortByPinyin = false) {
 
         let memberIds = wfc.getGroupMemberIds(groupId);
@@ -2074,6 +2089,62 @@ let store = {
         }
     },
 
+    /**
+     * 异步获取群成员用户信息
+     * 仅 electron 环境有效
+     * @param groupId
+     * @param includeSelf
+     * @param sortByPinyin
+     * @return {Promise<unknown>}
+     */
+    getGroupMemberUserInfosAsync(groupId, includeSelf = true, sortByPinyin = false) {
+        return new Promise((resolve, reject) => {
+            let memberIds = wfc.getGroupMemberIds(groupId);
+            wfc.getUserInfosAsync(memberIds, groupId, userInfos => {
+                if (!includeSelf) {
+                    userInfos = userInfos.filter(u => u.uid !== wfc.getUserId())
+                }
+                let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+                if (sortByPinyin) {
+                    resolve(this._patchAndSortUserInfos(userInfosCloneCopy, groupId));
+                } else {
+                    let compareFn = (u1, u2) => {
+                        let index1 = memberIds.findIndex(id => id === u1.uid)
+                        let index2 = memberIds.findIndex(id => id === u2.uid)
+                        return index1 - index2;
+                    }
+                    // resolve(userInfosCloneCopy)
+                    resolve(this._patchAndSortUserInfos(userInfosCloneCopy, groupId, compareFn));
+                }
+            });
+        })
+    },
+
+    /**
+     * 获取部分群成员用户信息
+     * @param groupId
+     * @param memberIds
+     * @param sortByPinyin
+     * @return {Promise<unknown>}
+     */
+    getPartialGroupMembersInfoAsync(groupId, memberIds, sortByPinyin = false) {
+        return new Promise((resolve, reject) => {
+            wfc.getUserInfosAsync(memberIds, groupId, userInfos => {
+                let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+                if (sortByPinyin) {
+                    resolve(this._patchAndSortUserInfos(userInfosCloneCopy, groupId));
+                } else {
+                    let compareFn = (u1, u2) => {
+                        let index1 = memberIds.findIndex(id => id === u1.uid)
+                        let index2 = memberIds.findIndex(id => id === u2.uid)
+                        return index1 - index2;
+                    }
+                    // resolve(userInfosCloneCopy)
+                    resolve(this._patchAndSortUserInfos(userInfosCloneCopy, groupId, compareFn));
+                }
+            });
+        })
+    },
     // clone一下，别影响到好友列表
     getConversationMemberUsrInfos(conversation) {
         let userInfos = [];
@@ -2086,6 +2157,22 @@ let store = {
             userInfos = this._patchAndSortUserInfos(userInfosCloneCopy, '');
         } else if (conversation.type === 1) {
             userInfos = this.getGroupMemberUserInfos(conversation.target, true);
+        }
+        return userInfos;
+    },
+
+    // 仅 electron 环境有效
+    async getConversationMemberUsrInfosAsync(conversation) {
+        let userInfos = [];
+        if (conversation.type === 0) {
+            if (conversation.target !== contactState.selfUserInfo.uid) {
+                userInfos.push(wfc.getUserInfo(wfc.getUserId(), false));
+            }
+            userInfos.push(wfc.getUserInfo(conversation.target, false));
+            let userInfosCloneCopy = userInfos.map(u => Object.assign({}, u));
+            userInfos = this._patchAndSortUserInfos(userInfosCloneCopy, '');
+        } else if (conversation.type === 1) {
+            userInfos = await this.getGroupMemberUserInfosAsync(conversation.target, true);
         }
         return userInfos;
     },
@@ -2291,4 +2378,5 @@ function _reset() {
 window.__store = store;
 window.stringValue = stringValue;
 window.longValue = longValue;
+window.fromString = Long.fromString;
 export default store
