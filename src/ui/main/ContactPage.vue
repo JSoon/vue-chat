@@ -41,7 +41,7 @@ import UserDetailView from "./contact/UserDetailView.vue";
 import FriendRequestDetailView from "./contact/FrienRequestDetailView.vue";
 import ChannelListView from "./contact/ChannelListView";
 import ChannelDetailView from "./contact/ChannelDetailView";
-import OrganizationDetailView from "./contact/OrganizationTreeView.vue";
+import OrganizationDetailView from "../../custom/views/OrganizationDetailView.vue";
 import ChatroomListView from "./contact/ChatroomListView.vue";
 import ChatroomDetailView from "./contact/ChatroomDetailView.vue";
 import DomainInfoView from "./contact/DomainInfoView.vue";

@@ -113,7 +113,7 @@ import store from "../../../store";
 import UserListView from "../user/UserListView.vue";
 import ChannelListView from "./ChannelListView";
 import ContactItemView from "./ContactItemView";
-import OrganizationListView from "./OrganizationListView.vue";
+import OrganizationListView from "../../../custom/views/OrganizationListView.vue";
 import Conversation from "../../../wfc/model/conversation";
 import ConversationType from "../../../wfc/model/conversationType";
 import ForwardType from "../conversation/message/forward/ForwardType";

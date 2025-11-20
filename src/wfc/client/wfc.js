@@ -2316,7 +2316,7 @@ export class WfcManager {
         if (!userInfo.updateDt) {
             return Config.DEFAULT_PORTRAIT_URL
         }
-        return `${Config.APP_SERVER}/hl-server/im/avatar/user?name=${encodeURIComponent(userInfo.displayName)}`
+        return `${Config.APP_SERVER}/im/avatar/user?name=${encodeURIComponent(userInfo.displayName)}`
         // return `http://localhost:8888/avatar?name=${encodeURIComponent(userInfo.displayName)}`
     }
 
@@ -2352,7 +2352,7 @@ export class WfcManager {
 
         req = JSON.stringify(req, null, '');
 
-        return `${Config.APP_SERVER}/hl-server/im/avatar/group?request=${encodeURIComponent(req)}`
+        return `${Config.APP_SERVER}/im/avatar/group?request=${encodeURIComponent(req)}`
         //return `http://localhost:8888/avatar/group?request=${encodeURIComponent(req)}`
     }
 
