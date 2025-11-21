@@ -9,7 +9,7 @@ import request from '@/custom/utils/request';
  */
 export function fetchDepartmentUsers(params) {
   return request({
-    url: '/hl-server/system/user/all',
+    url: '/system/user/all',
     method: 'get',
     params,
   });

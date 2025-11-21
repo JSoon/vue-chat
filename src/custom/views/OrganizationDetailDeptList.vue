@@ -1,9 +1,20 @@
 <template>
   <div class="w-[300px] h-full overflow-auto border-r border-gray-200">
-    <div class="flex items-center h-[66px] pl-4 text-lg font-bold border-b border-gray-200 sticky top-0 bg-white z-10">
+    <div
+      class="h-[66px] leading-[66px] px-4 text-lg font-bold border-b border-gray-200 sticky top-0 bg-white z-10 truncate"
+    >
       {{ sharedContactState.currentOrganization.deptName }}
     </div>
-    <el-tree v-if="treeData.length" :data="treeData" :props="treeProps" highlight-current accordion class="p-2 text-sm">
+    <el-tree
+      v-if="treeData.length"
+      :data="treeData"
+      :props="treeProps"
+      highlight-current
+      accordion
+      :expand-on-click-node="false"
+      @node-click="handleNodeClick"
+      class="p-2 text-sm"
+    >
       <template #default="{ node, data }">
         <div class="flex items-center gap-2 py-1 min-w-0">
           <div class="w-7 h-7 flex items-center justify-center">
@@ -15,7 +26,7 @@
               class="w-full h-full rounded-md"
             />
             <div v-else class="w-full h-full rounded-md bg-[#0074ff] text-white flex items-center justify-center">
-              {{ data.deptName ? data.deptName.charAt(0) : '' }}
+              {{ node.label ? node.label.charAt(0) : '' }}
             </div>
           </div>
           <div class="flex-1 truncate">{{ node.label }}</div>
@@ -38,6 +49,14 @@ const props = defineProps({
     default: () => [],
   },
 });
+
+// 定义事件
+const emit = defineEmits(['dept-selected']);
+
+// 处理节点点击事件
+function handleNodeClick(data) {
+  emit('dept-selected', data);
+}
 
 // 获取共享的联系状态
 const sharedContactState = store.state.contact;

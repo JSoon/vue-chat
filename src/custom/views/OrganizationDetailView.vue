@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
-    <OrganizationDetailDeptList :departments="organizations" />
-    <OrganizationDetailUserList />
+    <OrganizationDetailDeptList :departments="organizations" @dept-selected="handleDepartmentSelected" />
+    <OrganizationDetailUserList :current-department="currentDepartment" />
   </div>
 </template>
 
@@ -17,6 +17,14 @@ const sharedContactState = store.state.contact;
 const defaultPortraitUrl = Config.DEFAULT_DEPARTMENT_PORTRAIT_URL;
 
 const organizations = ref([]);
+// 添加当前选中部门状态
+const currentDepartment = ref(null);
+
+// 处理部门选中事件
+function handleDepartmentSelected(department) {
+  currentDepartment.value = department;
+}
+
 async function queryDepartments() {
   const { data } = await fetchDepartments({
     parentId: sharedContactState.currentOrganization.deptId,
