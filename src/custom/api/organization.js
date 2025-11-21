@@ -8,7 +8,7 @@ import request from '@/custom/utils/request';
  */
 export function fetchDepartments(params) {
   return request({
-    url: '/system/dept/list',
+    url: '/system/dept/list/im',
     method: 'get',
     params,
   });
