@@ -78,7 +78,7 @@ export const pstore = defineStore('store-p', () => {
         expandFriendList: true,
         expandGroup: false,
         expandChanel: false,
-        expandOrganization: false,
+        expandOrganization: true,
         expandExternalDomain: false,
         expandChatroom: false,
 

@@ -5,6 +5,25 @@
     >
       {{ currentDepartment ? currentDepartment.deptName : '请选择部门查看成员' }}
     </div>
+    <el-form :model="searchForm" class="p-3 bg-gray-50 border-b border-gray-200 sticky top-[66px] z-10">
+      <div class="flex gap-2 items-center mb-2">
+        <el-input
+          v-model="searchForm.nickName"
+          placeholder="搜索成员姓名"
+          clearable
+          class="flex-1"
+          @input="debouncedSearch"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
+      </div>
+      <div class="flex items-center gap-2">
+        <el-switch v-model="searchForm.includeSubDepartment" @change="handleSearch" />
+        <el-text>包含子部门成员</el-text>
+      </div>
+    </el-form>
     <el-skeleton v-if="loading" class="p-4" animated style="--el-skeleton-circle-size: 60px">
       <template #template>
         <div class="flex flex-col gap-2">
@@ -37,8 +56,10 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from 'vue';
-import { ElSkeleton, ElSkeletonItem, ElText } from 'element-plus';
+import { ref, watch } from 'vue';
+import { ElSkeleton, ElSkeletonItem, ElText, ElForm, ElInput, ElSwitch, ElIcon } from 'element-plus';
+import { Search } from '@element-plus/icons-vue';
+import { useDebounceFn } from '@vueuse/core';
 import { fetchDepartmentUsers } from '../api/user';
 import wfc from '../../wfc/client/wfc';
 
@@ -54,10 +75,33 @@ const props = defineProps({
 const users = ref([]);
 const loading = ref(false);
 
+// 搜索表单
+const searchForm = ref({
+  nickName: '',
+  includeSubDepartment: false,
+});
+
+// 处理搜索
+function handleSearch() {
+  queryDepartmentMembers(props.currentDepartment?.deptId);
+}
+
+// 创建防抖版本的搜索函数，延迟300毫秒
+const debouncedSearch = useDebounceFn(() => {
+  handleSearch();
+}, 500);
+
+// 重置部门状态（清空用户和搜索表单）
+function resetDepartmentState() {
+  users.value = [];
+  // 仅重置搜索表单的昵称，保持其他搜索条件
+  searchForm.value.nickName = '';
+}
+
 // 查询部门成员
 async function queryDepartmentMembers(deptId) {
   if (!deptId) {
-    users.value = [];
+    resetDepartmentState();
     return;
   }
 
@@ -65,7 +109,8 @@ async function queryDepartmentMembers(deptId) {
   try {
     const { data } = await fetchDepartmentUsers({
       deptId,
-      queryGrandson: true, // 仅查询当前部门成员
+      queryGrandson: searchForm.value.includeSubDepartment, // 不包含子部门时为true，只查询当前部门
+      nickName: searchForm.value.nickName, // 搜索用户昵称
     });
     users.value = data || [];
   } catch (error) {
@@ -92,10 +137,15 @@ function handleUserClick(user) {
   );
 }
 
-// 监听当前部门变化
-watchEffect(() => {
-  queryDepartmentMembers(props.currentDepartment?.deptId);
-});
+// 监听部门变化，只在部门ID变化时执行搜索
+watch(
+  () => props.currentDepartment?.deptId,
+  (newDeptId) => {
+    resetDepartmentState();
+    queryDepartmentMembers(newDeptId);
+  },
+  { immediate: true }
+);
 </script>
 
 <style lang="scss" scoped>
