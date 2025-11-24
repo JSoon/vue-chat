@@ -22,7 +22,7 @@
                             />
                         </a>
                         <a href="#" v-bind:class="{active : showConversationInfo}" @click.prevent="toggleConversationInfo">
-                            <inline-svg ref="setting" :src="require('@/custom/assets/icons/chat-info.svg')" />
+                            <inline-svg ref="setting" :src="require('@/custom/assets/icons/chat-info.svg')" style="display: inline-block" />
                         </a>
                     </div>
                 </div>

@@ -76,6 +76,9 @@ const props = defineProps({
   },
 });
 
+// 定义事件
+const emit = defineEmits(['user-selected']);
+
 // 用户列表和加载状态
 const users = ref([]);
 const loading = ref(false);
@@ -134,10 +137,15 @@ function handleUserClick(user) {
     user.userName,
     true,
     (userInfo) => {
-      console.log('用户信息:', userInfo);
+      // FIXME(SDK BUG): 这个接口有可能回调2次，第一次是本地的，第二次是网络获取的，如果没有变化，第二次就是空的
+      if (userInfo.uid) {
+        console.log('用户信息:', userInfo);
+        emit('user-selected', userInfo);
+      }
     },
     (error) => {
       console.error('获取用户信息失败:', error);
+      emit('user-selected', null);
     }
   );
 }
