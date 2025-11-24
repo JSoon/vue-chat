@@ -5,7 +5,11 @@
     >
       {{ currentDepartment ? currentDepartment.deptName : '请选择部门查看成员' }}
     </div>
-    <el-form :model="searchForm" class="p-3 bg-gray-50 border-b border-gray-200 sticky top-[66px] z-10">
+    <el-form
+      v-if="currentDepartment"
+      :model="searchForm"
+      class="p-3 bg-gray-50 border-b border-gray-200 sticky top-[66px] z-10"
+    >
       <div class="flex gap-2 items-center mb-2">
         <el-input
           v-model="searchForm.nickName"
@@ -51,13 +55,14 @@
         </div>
       </div>
     </div>
-    <div v-else-if="currentDepartment" class="text-center text-gray-400 py-10">当前部门暂无成员</div>
+    <el-empty v-else-if="currentDepartment" description="当前部门暂无成员" :image-size="64" />
+    <el-empty v-else description="请选择部门查看成员" :image-size="64" />
   </div>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue';
-import { ElSkeleton, ElSkeletonItem, ElText, ElForm, ElInput, ElSwitch, ElIcon } from 'element-plus';
+import { ElSkeleton, ElSkeletonItem, ElText, ElForm, ElInput, ElSwitch, ElIcon, ElEmpty } from 'element-plus';
 import { Search } from '@element-plus/icons-vue';
 import { useDebounceFn } from '@vueuse/core';
 import { fetchDepartmentUsers } from '../api/user';

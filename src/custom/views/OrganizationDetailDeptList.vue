@@ -5,12 +5,38 @@
     >
       {{ sharedContactState.currentOrganization.deptName }}
     </div>
+    <el-form :model="searchForm" class="p-3 bg-gray-50 border-b border-gray-200">
+      <div class="flex items-center gap-2">
+        <el-input
+          v-model="searchForm.deptName"
+          placeholder="搜索部门"
+          clearable
+          @clear="handleSearch"
+          @input="handleSearch"
+          class="flex-1"
+        />
+      </div>
+    </el-form>
+    <!-- 加载中的骨架图 -->
+    <el-skeleton v-if="loading" animated class="p-4">
+      <template #template>
+        <div class="flex flex-col gap-2">
+          <el-skeleton-item variant="text" style="width: 40%" />
+          <el-skeleton-item variant="text" style="width: 100%" />
+          <el-skeleton-item variant="text" style="width: 100%" />
+          <el-skeleton-item variant="text" style="width: 70%" />
+        </div>
+      </template>
+    </el-skeleton>
+    <!-- 部门树 -->
     <el-tree
-      v-if="treeData.length"
+      ref="deptTree"
+      v-else-if="treeData.length"
       :data="treeData"
       :props="treeProps"
-      highlight-current
-      accordion
+      :filter-node-method="filterNodeMethod"
+      :highlight-current="true"
+      :accordion="false"
       :expand-on-click-node="false"
       @node-click="handleNodeClick"
       class="p-2 text-sm"
@@ -29,33 +55,55 @@
               {{ node.label ? node.label.charAt(0) : '' }}
             </div>
           </div>
-          <div class="flex-1 truncate">{{ node.label }}</div>
+          <div class="flex-1 truncate" :title="node.label">{{ node.label }}</div>
         </div>
       </template>
     </el-tree>
-    <div v-else class="text-center text-gray-400 py-10">暂无部门数据</div>
+    <el-empty v-else description="暂无部门数据" :image-size="64" />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { ElTree, ElImage } from 'element-plus';
+import { computed, ref, watchEffect } from 'vue';
+import { ElTree, ElImage, ElForm, ElInput, ElEmpty, ElSkeleton, ElSkeletonItem } from 'element-plus';
 import store from '../../store';
-
-// 从父组件接收部门数据
-const props = defineProps({
-  departments: {
-    type: Array,
-    default: () => [],
-  },
-});
+import { fetchDepartments } from '../api/organization';
 
 // 定义事件
 const emit = defineEmits(['dept-selected']);
 
+// 添加加载状态
+const loading = ref(false);
+// 部门数据
+const departments = ref([]);
+
+// 搜索表单
+const searchForm = ref({
+  deptName: '',
+});
+
+// 树组件引用
+const deptTree = ref(null);
+
 // 处理节点点击事件
 function handleNodeClick(data) {
   emit('dept-selected', data);
+}
+
+// 处理搜索
+function handleSearch() {
+  if (deptTree.value) {
+    deptTree.value.filter(searchForm.value.deptName);
+  }
+}
+
+// 节点过滤方法
+function filterNodeMethod(value, data, node) {
+  if (!value) {
+    return true;
+  }
+  // 如果当前节点匹配搜索条件，就显示该节点
+  return data.deptName.toLowerCase().includes(value.toLowerCase());
 }
 
 // 获取共享的联系状态
@@ -102,9 +150,20 @@ function buildTreeData(list, rootParentId) {
   return result;
 }
 
+// 查询部门数据
+async function queryDepartments() {
+  loading.value = true;
+  const { data } = await fetchDepartments({
+    parentId: sharedContactState.currentOrganization.deptId,
+    queryGrandson: true,
+    status: 0,
+  }).finally(() => (loading.value = false));
+  departments.value = data || [];
+}
+
 // 计算树形数据
 const treeData = computed(() => {
-  if (!props.departments?.length) {
+  if (!departments?.value?.length) {
     return [];
   }
 
@@ -115,7 +174,11 @@ const treeData = computed(() => {
     return [];
   }
 
-  return buildTreeData(props.departments, currentOrgDeptId);
+  return buildTreeData(departments.value, currentOrgDeptId);
+});
+
+watchEffect(() => {
+  queryDepartments();
 });
 </script>
 
