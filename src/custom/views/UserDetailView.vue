@@ -26,7 +26,7 @@
             <div class="alias">
               <input
                 type="text"
-                ref="input"
+                ref="inputRef"
                 :value="user.friendAlias"
                 placeholder="备注名"
                 @keyup.enter="updateFriendAlias"
@@ -34,7 +34,7 @@
             </div>
           </li>
           <li>
-            <label>工号</label>
+            <label>{{ $t('common.wfc_id') }}</label>
             <p>{{ user.uid }}</p>
           </li>
           <li>
@@ -72,6 +72,7 @@ import ConversationType from '../../wfc/model/conversationType';
 import Conversation from '../../wfc/model/conversation';
 import wfc from '../../wfc/client/wfc';
 import WfcUtil from '../../wfc/util/wfcUtil';
+import Config from '../../config';
 
 // 接收父组件传递的用户信息
 const props = defineProps({
@@ -82,7 +83,7 @@ const props = defineProps({
 });
 
 // 默认头像
-const defaultAvatar = ref('');
+const defaultAvatar = ref(Config.DEFAULT_PORTRAIT_URL);
 
 // 聊天功能
 function chat() {
@@ -92,8 +93,8 @@ function chat() {
 }
 
 // 更新好友备注
+const inputRef = ref(null);
 function updateFriendAlias() {
-  const inputRef = ref(null);
   let friendAlias = inputRef.value?.value;
   if (friendAlias?.trim() && friendAlias !== props.user.friendAlias) {
     wfc.setFriendAlias(
@@ -107,6 +108,7 @@ function updateFriendAlias() {
       }
     );
   }
+  inputRef.value?.blur();
 }
 
 // 开始语音通话
@@ -172,7 +174,7 @@ const extraInfo = computed(() => {
 }
 
 .user-header-content-container {
-  width: 100%;
+  width: 400px;
 }
 
 .header {

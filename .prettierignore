@@ -13,4 +13,5 @@ src/main.js
 src/api/appServerApi.js
 src/ui
 src/wfc
+src/assets
 src/App.vue

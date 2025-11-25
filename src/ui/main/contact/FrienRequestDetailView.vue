@@ -7,7 +7,7 @@
                 </div>
                 <div class="name">
                     <h2>{{ name }}</h2>
-                    <p>你好，野火</p>
+                    <!-- <p>你好，野火</p> -->
                 </div>
             </div>
             <div class="content">
@@ -26,14 +26,14 @@
                         <label>{{ $t('common.wfc_id') }}</label>
                         <p>{{ user.name }}</p>
                     </li>
-                    <li>
+                    <!-- <li>
                         <label>{{ $t('common.area') }}</label>
                         <p>{{ $t('common.unknown') }}</p>
                     </li>
                     <li>
                         <label>{{ $t('common.label') }}</label>
                         <p>{{ $t('misc.test_user') }}</p>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
             <div class="footer" v-if="isFriend">

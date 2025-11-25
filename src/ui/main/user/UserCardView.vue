@@ -26,21 +26,21 @@
                                placeholder="备注名"/>
                     </div>
                 </li>
-                <li>
+                <!-- <li>
                     <label>{{ $t('common.area') }}</label>
                     <div>{{ $t('misc.beijing') }}</div>
                 </li>
                 <li>
                     <label>{{ $t('common.label') }}</label>
                     <div>{{ $t('misc.test_user') }}</div>
-                </li>
+                </li> -->
             </ul>
         </div>
         <div class="action">
             <!--            <a href="#"><i class="icon-ion-ios-shuffle" @click="share"></i></a>-->
             <a href="#" @click.prevent><i class="icon-ion-ios-chatboxes-outline" @click.prevent="chat"></i></a>
-            <a v-if="!isSelf" href="#" @click.prevent><i class="icon-ion-ios-telephone-outline" @click.prevent="startAudioCall"></i></a>
-            <a v-if="!isSelf" href="#" @click.prevent><i class="icon-ion-ios-videocam-outline" @click.prevent="startVideoCall"></i></a>
+            <!-- <a v-if="!isSelf" href="#" @click.prevent><i class="icon-ion-ios-telephone-outline" @click.prevent="startAudioCall"></i></a> -->
+            <!-- <a v-if="!isSelf" href="#" @click.prevent><i class="icon-ion-ios-videocam-outline" @click.prevent="startVideoCall"></i></a> -->
             <a v-if="!isFriend" href="#" @click.prevent><i class="icon-ion-ios-personadd-outline" @click.prevent="addFriend"></i></a>
         </div>
     </section>
@@ -266,7 +266,7 @@ export default {
     outline: none;
     border: none;
     background-color: #fcfcfc;
-    padding: 2px 5px;
+    /* padding: 2px 5px; */
 }
 
 .content ul li .alias > input:focus {
