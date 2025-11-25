@@ -41,14 +41,14 @@
                     <i class="icon-ion-ios-chatboxes-outline"></i>
                     <a>{{ $t('message.send_message') }}</a>
                 </div>
-                <div class="action" @click="startAudioCall">
+                <!-- <div class="action" @click="startAudioCall">
                     <i class="icon-ion-ios-telephone-outline"></i>
                     <a>语音通话</a>
                 </div>
                 <div class="action" @click="startVideoCall">
                     <i class="icon-ion-ios-videocam-outline"></i>
                     <a>视频通话</a>
-                </div>
+                </div> -->
             </div>
         </div>
     </section>

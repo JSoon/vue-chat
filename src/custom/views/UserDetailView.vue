@@ -164,16 +164,15 @@ const extraInfo = computed(() => {
 
 <style lang="css" scoped>
 .user-detail-container {
-  border-top-right-radius: var(--main-border-radius);
-  border-bottom-right-radius: var(--main-border-radius);
   display: flex;
   justify-content: center;
   height: 100%;
   overflow-y: auto;
+  padding: 0 20px;
 }
 
 .user-header-content-container {
-  width: 400px;
+  width: 100%;
 }
 
 .header {

@@ -170,15 +170,14 @@
     background-color: transparent;
   }
 
-  .message-input-container {
-    flex: 1;
-    background-color: white;
-  }
-
   .divider-handler {
     &::before {
       background-color: white;
     }
+  }
+
+  .message-input-container {
+    background-color: white;
   }
 }
 

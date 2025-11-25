@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[300px] h-full overflow-auto border-r border-gray-200">
+  <div class="h-full overflow-auto border-r border-gray-200">
     <div
       class="h-[66px] leading-[66px] px-4 text-lg font-bold border-b border-gray-200 sticky top-0 bg-white z-10 truncate"
     >
