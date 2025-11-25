@@ -30,7 +30,7 @@ const defaultPortraitUrl = Config.DEFAULT_ORGANIZATION_PORTRAIT_URL;
 // 查询根部门列表
 const rootOrganizations = ref([]);
 async function queryRootDepartments() {
-  const { data } = await fetchDepartments({ parentId: '0' });
+  const { data } = await fetchDepartments({ parentId: '0', status: 0 });
   rootOrganizations.value = data || [];
 }
 
