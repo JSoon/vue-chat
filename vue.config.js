@@ -22,7 +22,7 @@ module.exports = {
             return middlewares;
         }
     },
-    publicPath: process.env.VUE_BASE_URL,
+    publicPath: process.env.VUE_APP_BASE_URL,
     outputDir: 'dist',
     //assetsDir: 'static',
     lintOnSave: process.env.NODE_ENV === 'development',

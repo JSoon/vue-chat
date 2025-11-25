@@ -89,7 +89,7 @@ const defaultAvatar = ref(Config.DEFAULT_PORTRAIT_URL);
 function chat() {
   let conversation = new Conversation(ConversationType.Single, props.user.uid, 0);
   store.setCurrentConversation(conversation);
-  window.location.href = '/#/home';
+  window.location.href = `${process.env.VUE_APP_BASE_URL}#/home`;
 }
 
 // 更新好友备注
